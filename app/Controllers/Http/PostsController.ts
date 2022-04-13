@@ -1,13 +1,15 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Post from 'App/Models/Post'
 
+import Post from 'App/Models/Post'
+import StoreValidator from 'App/Validators/Post/StoreValidator'
+import UpdateValidator from 'App/Validators/Post/UpdateValidator'
 export default class PostsController {
   public async index({}: HttpContextContract) {
     return Post.all()
   }
 
   public async store({ request, response }: HttpContextContract) {
-    const data = request.only(['title', 'content'])
+    const data = await request.validate(StoreValidator)
     const post = await Post.create(data)
     return response.status(200).json({ message: 'Inserção efetuada com êxito', data: post })
   }
@@ -20,7 +22,7 @@ export default class PostsController {
 
   public async update({ request, params, response }: HttpContextContract) {
     const post = await Post.find(params.id)
-    const data = request.only(['title', 'content'])
+    const data = await request.validate(UpdateValidator)
 
     if (post) {
       post.merge(data)
