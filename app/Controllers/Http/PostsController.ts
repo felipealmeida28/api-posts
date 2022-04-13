@@ -8,9 +8,14 @@ export default class PostsController {
     return Post.all()
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, auth }: HttpContextContract) {
     const data = await request.validate(StoreValidator)
-    const post = await Post.create(data)
+    const user = await auth.authenticate()
+
+    const post = await Post.create({ authorId: user.id, ...data })
+
+    await post.load('author')
+
     return response.status(200).json({ message: 'Inserção efetuada com êxito', data: post })
   }
 

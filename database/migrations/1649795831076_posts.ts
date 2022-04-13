@@ -1,5 +1,4 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
-
 export default class Posts extends BaseSchema {
   protected tableName = 'posts'
 
@@ -8,7 +7,13 @@ export default class Posts extends BaseSchema {
       table.increments('id')
       table.string('title').notNullable().unique()
       table.text('content', 'longtext').notNullable()
-
+      table
+        .integer('author_id')
+        .unsigned()
+        .references('id')
+        .inTable('users')
+        .onUpdate('CASCADE')
+        .onUpdate('CASCADE')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
